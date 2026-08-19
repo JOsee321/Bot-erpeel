@@ -42,27 +42,23 @@ const SEED_PIKET = [
 ];
 
 export function seedDatabase() {
-  console.log('========================================================');
-  console.log('MEMULAI SEEDING DATA KELAS XI RPL 2 KE DATABASE');
-  console.log('========================================================\n');
+  console.log('[SEED] Memulai seeding data kelas XI RPL 2...');
 
   initDB();
 
-  console.log('Memasukkan Jadwal Pelajaran...');
+  console.log('[SEED] Memasukkan Jadwal Pelajaran...');
   for (const item of SEED_JADWAL) {
     queries.setJadwal(item.hari, item.jam_ke, item.mapel);
     console.log(`  - [${item.hari.toUpperCase()}] Slot ${item.jam_ke}: ${item.mapel}`);
   }
 
-  console.log('\nMemasukkan Daftar Petugas Piket...');
+  console.log('\n[SEED] Memasukkan Daftar Petugas Piket...');
   for (const item of SEED_PIKET) {
     queries.setPiket(item.hari, item.petugas);
     console.log(`  - [${item.hari.toUpperCase()}]: ${item.petugas}`);
   }
 
-  console.log('\n========================================================');
-  console.log('SEEDING BERHASIL: Seluruh data jadwal & piket telah aktif.');
-  console.log('========================================================');
+  console.log('\n[SEED] Selesai: Seluruh data jadwal & piket telah aktif.');
 }
 
 // Jalankan jika dieksekusi langsung

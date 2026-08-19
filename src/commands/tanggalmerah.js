@@ -21,7 +21,7 @@ export function formatHolidayDate(dateStr) {
 }
 
 /**
- * Handler command !tanggalmerah / !libur
+ * Handler command .tanggalmerah / .libur
  * @param {object} ctx
  */
 export async function handleGetTanggalMerah(ctx) {
@@ -55,8 +55,7 @@ export async function handleGetTanggalMerah(ctx) {
       return isDateMatch && isNational;
     });
 
-    let text = `*TANGGAL MERAH - ${monthName.toUpperCase()} ${currentYear}*\n`;
-    text += `----------------------------------------\n`;
+    let text = `*TANGGAL MERAH - ${monthName.toUpperCase()} ${currentYear}*\n\n`;
 
     if (monthlyHolidays.length === 0) {
       text += `Tidak ada tanggal merah di bulan ini.`;

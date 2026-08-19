@@ -128,14 +128,11 @@ export async function startWhatsAppBot() {
     } else if (connection === 'open') {
       // Guard agar banner dan inisialisasi cron hanya dieksekusi 1 kali per koneksi aktif
       if (!isSchedulerRunning) {
-        console.log('\n====================================================');
-        console.log('BOT RPL 2 BERHASIL TERHUBUNG');
-        console.log('----------------------------------------------------');
-        console.log(`Zona Waktu : ${config.timezone}`);
-        console.log(`Group JID  : ${config.groupJid || '(Belum diatur)'}`);
-        console.log(`Cron Pagi  : 06:00 WITA (Senin - Jumat)`);
-        console.log(`Cron Malam : 20:00 WITA (Minggu - Kamis)`);
-        console.log('====================================================\n');
+        console.log('\n[BOT] BOT RPL 2 BERHASIL TERHUBUNG');
+        console.log(`[BOT] Zona Waktu : ${config.timezone}`);
+        console.log(`[BOT] Group JID  : ${config.groupJid || '(Belum diatur)'}`);
+        console.log(`[BOT] Cron Pagi  : 06:00 WITA (Senin - Jumat)`);
+        console.log(`[BOT] Cron Malam : 20:00 WITA (Minggu - Kamis)\n`);
 
         try {
           const { initScheduler } = await import('./scheduler/cron.js').catch(() => ({ initScheduler: null }));

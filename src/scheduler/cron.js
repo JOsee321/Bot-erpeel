@@ -23,8 +23,7 @@ export async function broadcastPagi(sock) {
   const listJadwal = queries.getJadwalByHari(today);
   const piketData = queries.getPiketByHari(today);
 
-  let message = `*JADWAL KELAS RPL 2 - ${formattedToday.toUpperCase()}*\n`;
-  message += `----------------------------------------\n`;
+  let message = `*JADWAL KELAS RPL 2 - ${formattedToday.toUpperCase()}*\n\n`;
 
   // Bagian Jadwal
   message += `*Jadwal Pelajaran:*\n`;
@@ -53,7 +52,7 @@ export async function broadcastPagi(sock) {
 
   try {
     logger.cron(`Menjalankan broadcast pagi jam 06:00 WITA ke ${config.groupJid}...`);
-    await sock.sendMessage(config.groupJid, { text: message });
+    await sock.sendMessage(config.groupJid, { text: message.trim() });
     logger.cron(`Broadcast pagi berhasil dikirim ke ${config.groupJid}`);
   } catch (error) {
     logger.error('Gagal mengirim broadcast pagi', error);
@@ -74,8 +73,7 @@ export async function broadcastReminderPiketMalam(sock) {
   const formattedTomorrow = capitalizeDay(tomorrow);
   const piketData = queries.getPiketByHari(tomorrow);
 
-  let message = `*REMINDER PIKET BESOK (${formattedTomorrow.toUpperCase()})*\n`;
-  message += `----------------------------------------\n`;
+  let message = `*REMINDER PIKET BESOK (${formattedTomorrow.toUpperCase()})*\n\n`;
   message += `*Petugas Piket:*\n`;
 
   if (piketData && piketData.nama_petugas) {
@@ -93,7 +91,7 @@ export async function broadcastReminderPiketMalam(sock) {
 
   try {
     logger.cron(`Menjalankan reminder piket malam H-1 jam 20:00 WITA ke ${config.groupJid}...`);
-    await sock.sendMessage(config.groupJid, { text: message });
+    await sock.sendMessage(config.groupJid, { text: message.trim() });
     logger.cron(`Reminder piket malam berhasil dikirim ke ${config.groupJid}`);
   } catch (error) {
     logger.error('Gagal mengirim reminder piket malam', error);

@@ -8,9 +8,7 @@ import { handleHelp } from '../src/commands/help.js';
 import { handleGetId } from '../src/commands/utility.js';
 import { broadcastPagi, broadcastReminderPiketMalam } from '../src/scheduler/cron.js';
 
-console.log('========================================================');
-console.log('MEMULAI SMOKE TEST: BOT WHATSAPP RPL 2');
-console.log('========================================================\n');
+console.log('[TEST] Memulai smoke test Bot RPL 2...\n');
 
 // 1. Inisialisasi DB (In-Memory)
 console.log('[1/5] Menguji Inisialisasi Database In-Memory & Skema...');
@@ -115,7 +113,7 @@ await handleGetId(idCtx);
 assert.match(idCtx.getRepliedText(), /120363421062818190@g\.us/);
 assert.match(idCtx.getRepliedText(), /Grup WhatsApp/);
 
-// (e) Test Command !tanggalmerah
+// (e) Test Command .tanggalmerah
 const { handleGetTanggalMerah, formatHolidayDate } = await import('../src/commands/tanggalmerah.js');
 assert.equal(formatHolidayDate('2026-08-17'), '17 Agustus 2026');
 const holidayCtx = createMockCtx('tanggalmerah', []);
@@ -143,7 +141,4 @@ assert.match(sentBroadcasts[0].text, /\*JADWAL KELAS RPL 2 - /);
 assert.match(sentBroadcasts[1].text, /\*REMINDER PIKET BESOK \(/);
 
 console.log('  - Seluruh simulasi command & broadcast berjalan 100% presisi.\n');
-
-console.log('========================================================');
-console.log('SELURUH SMOKE TEST BOT RPL 2 BERHASIL DILALUI DENGAN SUKSES!');
-console.log('========================================================');
+console.log('[TEST] Seluruh smoke test Bot RPL 2 berhasil dilalui dengan sukses!');

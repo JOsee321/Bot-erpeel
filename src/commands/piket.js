@@ -2,7 +2,7 @@ import queries from '../db/queries.js';
 import { getTodayDayName, isValidDay, capitalizeDay, VALID_DAYS } from '../utils/date.js';
 
 /**
- * Handler command !piket [hari]
+ * Handler command .piket [hari]
  * @param {object} ctx
  */
 export async function handleGetPiket(ctx) {
@@ -21,8 +21,7 @@ export async function handleGetPiket(ctx) {
 
   if (!piketData || !piketData.nama_petugas) {
     return await ctx.reply(
-      `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n` +
-      `----------------------------------------\n` +
+      `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n\n` +
       `Belum ada data piket untuk hari ${formattedDay}.`
     );
   }
@@ -32,13 +31,12 @@ export async function handleGetPiket(ctx) {
     .map((nama) => nama.trim())
     .filter(Boolean);
 
-  let text = `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n`;
-  text += `----------------------------------------\n`;
+  let text = `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n\n`;
   for (let i = 0; i < listNama.length; i++) {
     text += `• ${listNama[i]}\n`;
   }
 
-  await ctx.reply(text);
+  await ctx.reply(text.trim());
 }
 
 export default {
