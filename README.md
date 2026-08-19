@@ -1,30 +1,24 @@
-# 🤖 Bot WhatsApp Asisten Kelas (Fase 1: Jadwal & Piket)
+# 🤖 Bot RPL 2 (WhatsApp Asisten Kelas XI RPL 2)
 
-Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai sumber informasi tunggal (*single source of truth*) untuk jadwal mata pelajaran dan pembagian petugas piket kelas, dilengkapi sistem pengingat otomatis terjadwal (pagi & malam H-1) dengan zona waktu **Asia/Makassar (WITA / UTC+8)**.
+Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai sumber informasi tunggal (*single source of truth*) untuk jadwal mata pelajaran dan giliran piket kelas **XI RPL 2**, dilengkapi sistem pengingat otomatis terjadwal (pagi & malam H-1) dengan zona waktu **Asia/Makassar (WITA / UTC+8)**.
 
 ---
 
 ## 🌟 Fitur Utama
 
-- 📅 **Jadwal Pelajaran**:
+- 📅 **Jadwal Pelajaran (Read-Only)**:
   - `!jadwal` — Menampilkan jadwal pelajaran hari ini.
   - `!jadwal <hari>` — Menampilkan jadwal pelajaran pada hari tertentu (contoh: `!jadwal senin`).
-  - `!setjadwal <hari> <jam_ke> <mapel>` — Menambah/mengubah slot jadwal *(Khusus Admin)*.
-  - `!hapusjadwal <hari> <jam_ke>` — Menghapus slot jadwal *(Khusus Admin)*.
-- 🧹 **Piket Kelas**:
+- 🧹 **Piket Kelas (Read-Only)**:
   - `!piket` — Menampilkan daftar petugas piket hari ini.
   - `!piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `!piket rabu`).
-  - `!setpiket <hari> <nama1, nama2, ...>` — Menambah/mengubah susunan petugas piket *(Khusus Admin)*.
-  - `!hapuspiket <hari>` — Menghapus susunan petugas piket *(Khusus Admin)*.
-- 🆔 **Utility JID / Group Helper**:
-  - `!id` / `!groupid` — Menampilkan JID / ID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di `.env`.
-- 👑 **Sistem Hak Akses & Permission**:
-  - Validasi otomatis nomor WhatsApp admin & super admin sebelum eksekusi command penulisan data.
+- 🆔 **Utility Group ID Helper**:
+  - `!id` / `!groupid` — Menampilkan JID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di file `.env`.
+- 📖 **Menu Bantuan**:
+  - `!help` / `!menu` — Menampilkan daftar perintah yang tersedia.
 - ⏰ **Automated Scheduler (WITA)**:
   - **Pagi (06:00 WITA, Senin–Jumat)**: Auto-broadcast jadwal mapel & daftar piket hari berjalan ke grup kelas.
   - **Malam (20:00 WITA, Minggu–Kamis)**: Auto-reminder H-1 daftar petugas piket untuk esok hari.
-- 📖 **Menu Bantuan Dinamis**:
-  - `!help` / `!menu` — Menampilkan panduan command secara otomatis menyesuaikan role pengirim (Siswa vs Pengurus Kelas).
 
 ---
 
@@ -37,22 +31,20 @@ Bot-erpeel/
 │   ├── config.js         # Konfigurasi environment variables & path
 │   ├── router.js         # Routing pesan & error boundary dispatcher
 │   ├── commands/
-│   │   ├── jadwal.js     # Handler !jadwal, !setjadwal, !hapusjadwal
-│   │   ├── piket.js      # Handler !piket, !setpiket, !hapuspiket
+│   │   ├── jadwal.js     # Handler !jadwal
+│   │   ├── piket.js      # Handler !piket
 │   │   ├── utility.js    # Handler !id & !groupid
 │   │   └── help.js       # Handler !help / !menu
 │   ├── db/
 │   │   ├── init.js       # Inisialisasi SQLite schema (WAL mode)
 │   │   ├── queries.js    # Data access layer & helper queries
 │   │   └── seed.js       # Seeder data riil kelas XI RPL 2
-│   ├── middleware/
-│   │   └── isAdmin.js    # Verifikasi hak akses admin & normalisasi nomor
 │   ├── scheduler/
-│   │   └── cron.js       # Cron job broadcast pagi & reminder piket H-1
+│   │   └── cron.js       # Cron job broadcast pagi (06:00) & reminder piket H-1 (20:00)
 │   └── utils/
 │       └── date.js       # Utilitas penanggalan & zona waktu Asia/Makassar
 ├── test/
-│   └── db-test.js        # Smoke test & database seeder validation
+│   └── db-test.js        # Smoke test & validation suite
 ├── auth_info/            # Multi-device session Baileys (Git ignored)
 ├── .env.example          # Template environment variable
 ├── package.json
@@ -88,8 +80,7 @@ Contoh isi `.env`:
 ```env
 PREFIX=!
 TIMEZONE=Asia/Makassar
-GROUP_JID=120363000000000000@g.us
-SUPER_ADMIN=6281234567890
+GROUP_JID=120363421062818190@g.us
 CRON_JADWAL_PAGI=0 6 * * 1-5
 CRON_PIKET_MALAM=0 20 * * 0-4
 DB_PATH=./data/bot.sqlite
@@ -123,7 +114,7 @@ Saat pertama kali dijalankan, scan QR Code yang muncul di terminal menggunakan f
 ## 🛡️ Keamanan & Kredensial
 
 - Folder `auth_info/`, file `.env`, serta file database SQLite `*.sqlite` telah dikonfigurasi di `.gitignore` agar tidak pernah ter-commit ke repositori publik.
-- Setiap operasi perubahan data (`!setjadwal`, `!hapusjadwal`, `!setpiket`, `!hapuspiket`) diproteksi middleware `isAdmin`.
+- Seluruh data jadwal dan piket pada chat WhatsApp bersifat murni *read-only* untuk mencegah pengubahan data tanpa izin.
 
 ---
 

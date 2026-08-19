@@ -27,7 +27,7 @@ export async function broadcastPagi(sock) {
   const listJadwal = queries.getJadwalByHari(today);
   const piketData = queries.getPiketByHari(today);
 
-  let message = `🌅 *PENGINGAT PAGI — ${formattedToday.toUpperCase()}*\n`;
+  let message = `🌅 *SEMANGAT PAGI RPL 2! — ${formattedToday.toUpperCase()}*\n`;
   message += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
 
   // Bagian Jadwal
@@ -81,7 +81,7 @@ export async function broadcastReminderPiketMalam(sock) {
   const formattedTomorrow = capitalizeDay(tomorrow);
   const piketData = queries.getPiketByHari(tomorrow);
 
-  let message = `🌙 *REMINDER PIKET BESOK — ${formattedTomorrow.toUpperCase()}*\n`;
+  let message = `🌙 *REMINDER PIKET BESOK RPL 2 — ${formattedTomorrow.toUpperCase()}*\n`;
   message += `━━━━━━━━━━━━━━━━━━━━━\n`;
   message += `Mengingatkan teman-teman petugas piket untuk hari esok (*${formattedTomorrow}*):\n\n`;
 

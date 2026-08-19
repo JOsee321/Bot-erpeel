@@ -12,8 +12,8 @@ import path from 'path';
 import config from './config.js';
 import { initDB } from './db/init.js';
 import { handleIncomingMessage } from './router.js';
-import { handleGetJadwal, handleSetJadwal, handleHapusJadwal } from './commands/jadwal.js';
-import { handleGetPiket, handleSetPiket, handleHapusPiket } from './commands/piket.js';
+import { handleGetJadwal } from './commands/jadwal.js';
+import { handleGetPiket } from './commands/piket.js';
 import { handleHelp } from './commands/help.js';
 import { handleGetId } from './commands/utility.js';
 
@@ -36,13 +36,9 @@ export function registerCommand(names, handler) {
   }
 }
 
-// Registrasi seluruh command bawaan bot
+// Registrasi seluruh command publik bot
 registerCommand(['jadwal'], handleGetJadwal);
-registerCommand(['setjadwal'], handleSetJadwal);
-registerCommand(['hapusjadwal'], handleHapusJadwal);
 registerCommand(['piket'], handleGetPiket);
-registerCommand(['setpiket'], handleSetPiket);
-registerCommand(['hapuspiket'], handleHapusPiket);
 registerCommand(['id', 'groupid'], handleGetId);
 registerCommand(['help', 'menu', 'panduan'], handleHelp);
 
@@ -108,9 +104,8 @@ export async function startWhatsAppBot() {
       }
     } else if (connection === 'open') {
       logger.info('====================================================');
-      logger.info('🚀 BOT WHATSAPP ASISTEN KELAS BERHASIL TERHUBUNG!');
+      logger.info('🚀 BOT WHATSAPP RPL 2 BERHASIL TERHUBUNG!');
       logger.info(`⏰ Zona Waktu: ${config.timezone}`);
-      logger.info(`👑 Super Admin: ${config.superAdmin || 'Belum diatur'}`);
       logger.info(`👥 Group JID: ${config.groupJid || 'Belum diatur'}`);
       logger.info('====================================================');
 

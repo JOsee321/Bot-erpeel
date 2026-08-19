@@ -1,7 +1,7 @@
 {
   "name": "bot-erpeel",
   "version": "1.0.0",
-  "description": "Bot WhatsApp Asisten Kelas (Fase 1: Jadwal & Piket)",
+  "description": "Bot WhatsApp RPL 2 (Jadwal & Piket)",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

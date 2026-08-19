@@ -1,74 +1,63 @@
 import assert from 'node:assert/strict';
 import { initDB } from '../src/db/init.js';
 import queries from '../src/db/queries.js';
-import { checkIsAdmin, requireAdmin } from '../src/middleware/isAdmin.js';
 import { getTodayDayName, getTomorrowDayName, isValidDay, capitalizeDay } from '../src/utils/date.js';
-import { handleGetJadwal, handleSetJadwal, handleHapusJadwal } from '../src/commands/jadwal.js';
-import { handleGetPiket, handleSetPiket, handleHapusPiket } from '../src/commands/piket.js';
+import { handleGetJadwal } from '../src/commands/jadwal.js';
+import { handleGetPiket } from '../src/commands/piket.js';
 import { handleHelp } from '../src/commands/help.js';
+import { handleGetId } from '../src/commands/utility.js';
 import { broadcastPagi, broadcastReminderPiketMalam } from '../src/scheduler/cron.js';
 
 console.log('🧪 ========================================================');
-console.log('🧪 MEMULAI SMOKE TEST: BOT WHATSAPP ASISTEN KELAS (FASE 1)');
+console.log('🧪 MEMULAI SMOKE TEST: BOT WHATSAPP RPL 2');
 console.log('🧪 ========================================================\n');
 
 // 1. Inisialisasi DB (In-Memory)
-console.log('▶ [1/6] Menguji Inisialisasi Database In-Memory & Skema...');
+console.log('▶ [1/5] Menguji Inisialisasi Database In-Memory & Skema...');
 const db = initDB(':memory:');
 assert.ok(db, 'Database instance harus berhasil diinisialisasi');
 console.log('  ✔ Database berhasil diinisialisasi.\n');
 
-// 2. Pengujian CRUD Jadwal
-console.log('▶ [2/6] Menguji Operasi Database & Logika Jadwal Pelajaran...');
-queries.setJadwal('senin', 1, 'Matematika');
-queries.setJadwal('senin', 2, 'Bahasa Indonesia');
-queries.setJadwal('senin', 3, 'Pemrograman Web');
+// 2. Pengujian Database Jadwal
+console.log('▶ [2/5] Menguji Operasi Database & Logika Jadwal Pelajaran...');
+queries.setJadwal('senin', 1, '07:30 - 08:10 : Upacara / Pembiasaan (-)');
+queries.setJadwal('senin', 2, '08:10 - 11:05 : Konsentrasi Keahlian / KK (Pak Farid)');
+queries.setJadwal('senin', 3, '11:05 - 14:30 : Bahasa Inggris (Bu Suci)');
 
 // Test UPSERT (Update existing slot)
-queries.setJadwal('senin', 1, 'Matematika Lanjut');
+queries.setJadwal('senin', 1, '07:30 - 08:10 : Pembiasaan Karakter');
 
 const jadwalSenin = queries.getJadwalByHari('senin');
 assert.equal(jadwalSenin.length, 3, 'Harus ada 3 jadwal pada hari senin');
-assert.equal(jadwalSenin[0].mapel, 'Matematika Lanjut', 'Slot 1 harus ter-update menjadi Matematika Lanjut');
-assert.equal(jadwalSenin[1].mapel, 'Bahasa Indonesia');
+assert.equal(jadwalSenin[0].mapel, '07:30 - 08:10 : Pembiasaan Karakter', 'Slot 1 harus ter-update');
 
 // Test Hapus Jadwal
 const deleteResult = queries.deleteJadwal('senin', 3);
 assert.equal(deleteResult.changes, 1, 'Harus berhasil menghapus 1 slot');
 const updatedJadwalSenin = queries.getJadwalByHari('senin');
 assert.equal(updatedJadwalSenin.length, 2, 'Setelah hapus slot 3, harus tersisa 2');
-console.log('  ✔ CRUD & UPSERT Jadwal berhasil divalidasi.\n');
+console.log('  ✔ Database Jadwal berhasil divalidasi.\n');
 
-// 3. Pengujian CRUD Piket
-console.log('▶ [3/6] Menguji Operasi Database & Logika Piket...');
-queries.setPiket('senin', 'Budi, Ani, Rudi');
-queries.setPiket('selasa', 'Siti, Doni, Maya');
+// 3. Pengujian Database Piket
+console.log('▶ [3/5] Menguji Operasi Database & Logika Piket...');
+queries.setPiket('senin', 'Hafidz, Reza, Aliya, Brigas, Damaiyah, Dhia');
+queries.setPiket('selasa', 'Adry, Hanna, Isa, Kamila, Alief, Ziyad');
 
 // Test UPSERT Piket
-queries.setPiket('senin', 'Budi, Ani, Rudi, Eka');
+queries.setPiket('senin', 'Hafidz, Reza, Aliya, Brigas, Damaiyah, Dhia, Bintang');
 
 const piketSenin = queries.getPiketByHari('senin');
 assert.ok(piketSenin, 'Piket senin harus ada');
-assert.equal(piketSenin.nama_petugas, 'Budi, Ani, Rudi, Eka');
+assert.equal(piketSenin.nama_petugas, 'Hafidz, Reza, Aliya, Brigas, Damaiyah, Dhia, Bintang');
 
 // Test Hapus Piket
 const delPiketResult = queries.deletePiket('selasa');
 assert.equal(delPiketResult.changes, 1, 'Harus berhasil menghapus piket selasa');
 assert.equal(queries.getPiketByHari('selasa'), undefined);
-console.log('  ✔ CRUD & UPSERT Piket berhasil divalidasi.\n');
+console.log('  ✔ Database Piket berhasil divalidasi.\n');
 
-// 4. Pengujian Admin & Middleware
-console.log('▶ [4/6] Menguji Sistem Permission & Middleware Admin...');
-queries.addAdmin('628999888777');
-assert.equal(checkIsAdmin('628999888777'), true, 'Nomor 628999888777 harus terdaftar sebagai admin');
-assert.equal(checkIsAdmin('628111222333'), false, 'Nomor acak tidak boleh dianggap admin');
-
-queries.deleteAdmin('628999888777');
-assert.equal(checkIsAdmin('628999888777'), false, 'Setelah dihapus, tidak lagi menjadi admin');
-console.log('  ✔ Autentikasi dan normalisasi nomor admin berhasil divalidasi.\n');
-
-// 5. Pengujian Timezone & Penanggalan (WITA)
-console.log('▶ [5/6] Menguji Utilitas Zona Waktu Asia/Makassar (WITA)...');
+// 4. Pengujian Timezone & Penanggalan (WITA)
+console.log('▶ [4/5] Menguji Utilitas Zona Waktu Asia/Makassar (WITA)...');
 const todayName = getTodayDayName();
 const tomorrowName = getTomorrowDayName();
 assert.ok(isValidDay(todayName), `Hari ini (${todayName}) harus merupakan nama hari valid`);
@@ -77,17 +66,19 @@ assert.equal(capitalizeDay('senin'), 'Senin');
 console.log(`  ✔ Hari ini di WITA: ${capitalizeDay(todayName)}, Besok: ${capitalizeDay(tomorrowName)}`);
 console.log('  ✔ Validasi penanggalan zona waktu sukses.\n');
 
-// 6. Simulasi Eksekusi Command & Response Formatting
-console.log('▶ [6/6] Menyimulasikan Eksekusi Command Handlers...');
+// 5. Simulasi Eksekusi Command & Response Formatting
+console.log('▶ [5/5] Menyimulasikan Eksekusi Command Handlers & Broadcast...');
 
 // Helper Context Mocking
-function createMockCtx(senderNumber, cmd, args = []) {
+function createMockCtx(cmd, args = [], isGroup = true) {
   let repliedText = '';
   return {
     prefix: '!',
     commandName: cmd,
     args,
-    senderNumber,
+    senderNumber: '6281234567890',
+    remoteJid: isGroup ? '120363421062818190@g.us' : '6281234567890@s.whatsapp.net',
+    isGroup,
     reply: async (text) => {
       repliedText = text;
       return text;
@@ -96,56 +87,39 @@ function createMockCtx(senderNumber, cmd, args = []) {
   };
 }
 
-// (a) Test Non-Admin mencoba setjadwal
-const nonAdminCtx = createMockCtx('628111222333', 'setjadwal', ['senin', '1', 'Biologi']);
-await handleSetJadwal(nonAdminCtx);
-assert.match(nonAdminCtx.getRepliedText(), /khusus admin/i, 'Non-admin harus ditolak');
-
-// (b) Test Admin menjalankan setjadwal
-queries.addAdmin('6281234567890');
-const adminCtx = createMockCtx('6281234567890', 'setjadwal', ['rabu', '1', 'Fisika']);
-await handleSetJadwal(adminCtx);
-assert.match(adminCtx.getRepliedText(), /Jadwal Berhasil Disimpan/i, 'Admin harus berhasil menyimpan jadwal');
-
-// (c) Test User melihat jadwal
-const viewJadwalCtx = createMockCtx('628111222333', 'jadwal', ['rabu']);
+// (a) Test Command !jadwal
+queries.setJadwal('rabu', 1, '07:30 - 09:30 : Bahasa Indonesia (Bu Anissa)');
+const viewJadwalCtx = createMockCtx('jadwal', ['rabu']);
 await handleGetJadwal(viewJadwalCtx);
-assert.match(viewJadwalCtx.getRepliedText(), /Fisika/, 'Jadwal rabu harus memuat mata pelajaran Fisika');
+assert.match(viewJadwalCtx.getRepliedText(), /JADWAL PELAJARAN RPL 2/i);
+assert.match(viewJadwalCtx.getRepliedText(), /Bahasa Indonesia/);
 
-// (d) Test User melihat help
-const helpSiswaCtx = createMockCtx('628111222333', 'help');
-await handleHelp(helpSiswaCtx);
-assert.match(helpSiswaCtx.getRepliedText(), /COMMAND UMUM/i);
-assert.doesNotMatch(helpSiswaCtx.getRepliedText(), /PENGURUS KELAS \/ ADMIN/i);
+// (b) Test Command !piket
+queries.setPiket('rabu', 'Meilani, Fahry, Wildan, Akmal, Basyir, Joydi');
+const viewPiketCtx = createMockCtx('piket', ['rabu']);
+await handleGetPiket(viewPiketCtx);
+assert.match(viewPiketCtx.getRepliedText(), /PETUGAS PIKET RPL 2/i);
+assert.match(viewPiketCtx.getRepliedText(), /Meilani/);
 
-const helpAdminCtx = createMockCtx('6281234567890', 'help');
-await handleHelp(helpAdminCtx);
-assert.match(helpAdminCtx.getRepliedText(), /PENGURUS KELAS \/ ADMIN/i);
+// (c) Test Command !help / !menu (Rebranded)
+const helpCtx = createMockCtx('help');
+await handleHelp(helpCtx);
+assert.match(helpCtx.getRepliedText(), /BOT RPL 2/i);
+assert.match(helpCtx.getRepliedText(), /DAFTAR COMMAND/i);
+assert.match(helpCtx.getRepliedText(), /!id/);
 
-// (e) Test Utility Command !id
-const { handleGetId } = await import('../src/commands/utility.js');
-const groupIdCtx = {
-  prefix: '!',
-  commandName: 'id',
-  args: [],
-  senderNumber: '6281234567890',
-  remoteJid: '1203631234567890@g.us',
-  isGroup: true,
-  reply: async (text) => text,
-};
-let repliedIdText = '';
-groupIdCtx.reply = async (text) => { repliedIdText = text; return text; };
-await handleGetId(groupIdCtx);
-assert.match(repliedIdText, /1203631234567890@g\.us/);
-assert.match(repliedIdText, /Grup WhatsApp/);
+// (d) Test Utility Command !id
+const idCtx = createMockCtx('id', [], true);
+await handleGetId(idCtx);
+assert.match(idCtx.getRepliedText(), /120363421062818190@g\.us/);
+assert.match(idCtx.getRepliedText(), /Grup WhatsApp/);
 
-// (f) Test Seeder data contoh untuk hari ini & besok
-queries.setJadwal(todayName, 1, 'Pendidikan Agama');
-queries.setJadwal(todayName, 2, 'Basis Data');
-queries.setPiket(todayName, 'Siti, Rian, Bayu');
-queries.setPiket(tomorrowName, 'Doni, Clara, Farhan');
+// (e) Test Seeder data untuk hari ini & besok
+queries.setJadwal(todayName, 1, 'Konsentrasi Keahlian / KK');
+queries.setPiket(todayName, 'Hafidz, Reza, Aliya');
+queries.setPiket(tomorrowName, 'Adry, Hanna, Isa');
 
-// (f) Test Generator Broadcast
+// (f) Test Generator Broadcast (Rebranded)
 const sentBroadcasts = [];
 const mockSock = {
   sendMessage: async (jid, content) => {
@@ -157,11 +131,11 @@ await broadcastPagi(mockSock);
 await broadcastReminderPiketMalam(mockSock);
 
 assert.equal(sentBroadcasts.length, 2, 'Harus terkirim 2 broadcast');
-assert.match(sentBroadcasts[0].text, /PENGINGAT PAGI/);
-assert.match(sentBroadcasts[1].text, /REMINDER PIKET BESOK/);
+assert.match(sentBroadcasts[0].text, /SEMANGAT PAGI RPL 2!/);
+assert.match(sentBroadcasts[1].text, /REMINDER PIKET BESOK RPL 2/);
 
 console.log('  ✔ Seluruh simulasi command & broadcast berjalan 100% presisi.\n');
 
 console.log('🎉 ========================================================');
-console.log('🎉 SELURUH SMOKE TEST BERHASIL DILALUI DENGAN SUKSES!');
+console.log('🎉 SELURUH SMOKE TEST BOT RPL 2 BERHASIL DILALUI DENGAN SUKSES!');
 console.log('🎉 ========================================================');
