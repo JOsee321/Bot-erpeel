@@ -12,6 +12,8 @@ Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai su
 - **Piket Kelas (Read-Only)**:
   - `!piket` — Menampilkan daftar petugas piket hari ini.
   - `!piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `!piket rabu`).
+- **Hari Libur Nasional**:
+  - `!tanggalmerah` / `!libur` — Menampilkan daftar hari libur nasional bulan berjalan.
 - **Utility Group ID Helper**:
   - `!id` / `!groupid` — Menampilkan JID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di file `.env`.
 - **Menu Bantuan**:
@@ -33,6 +35,7 @@ Bot-erpeel/
 │   ├── commands/
 │   │   ├── jadwal.js     # Handler !jadwal
 │   │   ├── piket.js      # Handler !piket
+│   │   ├── tanggalmerah.js # Handler !tanggalmerah / !libur
 │   │   ├── utility.js    # Handler !id & !groupid
 │   │   └── help.js       # Handler !help / !menu
 │   ├── db/

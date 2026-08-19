@@ -12,6 +12,7 @@ export async function handleHelp(ctx) {
   text += `• *${p}jadwal <hari>* : Jadwal pelajaran hari tertentu\n`;
   text += `• *${p}piket* : Petugas piket hari ini\n`;
   text += `• *${p}piket <hari>* : Petugas piket hari tertentu\n`;
+  text += `• *${p}tanggalmerah* : Cek hari libur nasional bulan ini\n`;
   text += `• *${p}id* : Cek ID / JID obrolan saat ini\n`;
   text += `• *${p}help* : Menampilkan menu ini\n\n`;
 

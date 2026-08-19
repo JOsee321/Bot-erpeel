@@ -115,12 +115,19 @@ await handleGetId(idCtx);
 assert.match(idCtx.getRepliedText(), /120363421062818190@g\.us/);
 assert.match(idCtx.getRepliedText(), /Grup WhatsApp/);
 
-// (e) Test Seeder data untuk hari ini & besok
+// (e) Test Command !tanggalmerah
+const { handleGetTanggalMerah, formatHolidayDate } = await import('../src/commands/tanggalmerah.js');
+assert.equal(formatHolidayDate('2026-08-17'), '17 Agustus 2026');
+const holidayCtx = createMockCtx('tanggalmerah', []);
+await handleGetTanggalMerah(holidayCtx);
+assert.match(holidayCtx.getRepliedText(), /\*TANGGAL MERAH -/i);
+
+// (f) Test Seeder data untuk hari ini & besok
 queries.setJadwal(todayName, 1, 'Konsentrasi Keahlian / KK');
 queries.setPiket(todayName, 'Hafidz, Reza, Aliya');
 queries.setPiket(tomorrowName, 'Adry, Hanna, Isa');
 
-// (f) Test Generator Broadcast
+// (g) Test Generator Broadcast
 const sentBroadcasts = [];
 const mockSock = {
   sendMessage: async (jid, content) => {

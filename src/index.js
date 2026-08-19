@@ -16,6 +16,7 @@ import { handleGetJadwal } from './commands/jadwal.js';
 import { handleGetPiket } from './commands/piket.js';
 import { handleHelp } from './commands/help.js';
 import { handleGetId } from './commands/utility.js';
+import { handleGetTanggalMerah } from './commands/tanggalmerah.js';
 import logger from './utils/logger.js';
 
 // Map penyimpanan command handler terdaftar
@@ -36,6 +37,7 @@ export function registerCommand(names, handler) {
 // Registrasi seluruh command publik bot
 registerCommand(['jadwal'], handleGetJadwal);
 registerCommand(['piket'], handleGetPiket);
+registerCommand(['tanggalmerah', 'libur'], handleGetTanggalMerah);
 registerCommand(['id', 'groupid'], handleGetId);
 registerCommand(['help', 'menu', 'panduan'], handleHelp);
 
