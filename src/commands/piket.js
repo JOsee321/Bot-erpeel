@@ -10,9 +10,9 @@ export async function handleGetPiket(ctx) {
 
   if (!isValidDay(targetHari)) {
     return await ctx.reply(
-      `❌ Hari *${ctx.args[0]}* tidak valid.\n\n` +
+      `Hari '${ctx.args[0]}' tidak valid.\n` +
       `Pilihan hari: ${VALID_DAYS.join(', ')}\n` +
-      `Contoh: *${ctx.prefix}piket senin* atau cukup *${ctx.prefix}piket* untuk hari ini.`
+      `Contoh: ${ctx.prefix}piket senin`
     );
   }
 
@@ -21,8 +21,9 @@ export async function handleGetPiket(ctx) {
 
   if (!piketData || !piketData.nama_petugas) {
     return await ctx.reply(
-      `🧹 *PETUGAS PIKET RPL 2 — ${formattedDay.toUpperCase()}*\n\n` +
-      `_Belum ada petugas piket yang diatur untuk hari ${formattedDay}._`
+      `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n` +
+      `----------------------------------------\n` +
+      `Belum ada data piket untuk hari ${formattedDay}.`
     );
   }
 
@@ -31,11 +32,11 @@ export async function handleGetPiket(ctx) {
     .map((nama) => nama.trim())
     .filter(Boolean);
 
-  let text = `🧹 *PETUGAS PIKET RPL 2 — ${formattedDay.toUpperCase()}*\n\n`;
+  let text = `*PETUGAS PIKET - ${formattedDay.toUpperCase()}*\n`;
+  text += `----------------------------------------\n`;
   for (let i = 0; i < listNama.length; i++) {
     text += `• ${listNama[i]}\n`;
   }
-  text += `\n_Semangat menjaga kebersihan kelas! ✨_`;
 
   await ctx.reply(text);
 }

@@ -78,7 +78,7 @@ export async function startWhatsAppBot() {
 
     if (qr) {
       console.log('\n' + '='.repeat(50));
-      console.log('📱 SCAN QR CODE DI BAWAH INI UNTUK LOGIN WHATSAPP:');
+      console.log('SCAN QR CODE DI BAWAH INI UNTUK LOGIN WHATSAPP:');
       console.log('='.repeat(50));
       qrcode.generate(qr, { small: true });
       console.log('='.repeat(50) + '\n');
@@ -104,9 +104,9 @@ export async function startWhatsAppBot() {
       }
     } else if (connection === 'open') {
       logger.info('====================================================');
-      logger.info('🚀 BOT WHATSAPP RPL 2 BERHASIL TERHUBUNG!');
-      logger.info(`⏰ Zona Waktu: ${config.timezone}`);
-      logger.info(`👥 Group JID: ${config.groupJid || 'Belum diatur'}`);
+      logger.info('BOT WHATSAPP RPL 2 BERHASIL TERHUBUNG!');
+      logger.info(`Zona Waktu: ${config.timezone}`);
+      logger.info(`Group JID: ${config.groupJid || 'Belum diatur'}`);
       logger.info('====================================================');
 
       // Hook inisialisasi scheduler (akan diaktifkan pada Tahap 4)

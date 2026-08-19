@@ -100,7 +100,7 @@ export async function handleIncomingMessage(sock, m, commandRegistry = new Map()
         await handler(ctx);
       } catch (cmdError) {
         logger.error(cmdError, `[ROUTER-CMD-ERROR] Error executing command '${commandName}'`);
-        await reply(`⚠️ Terjadi kesalahan internal saat memproses perintah *${config.prefix}${commandName}*. Silakan coba beberapa saat lagi.`);
+        await reply(`Terjadi kesalahan saat memproses perintah *${config.prefix}${commandName}*. Silakan coba beberapa saat lagi.`);
       }
     } else {
       logger.debug(`[ROUTER] Command not found: ${commandName}`);

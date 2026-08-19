@@ -1,28 +1,28 @@
-# 🤖 Bot RPL 2 (WhatsApp Asisten Kelas XI RPL 2)
+# Bot RPL 2 (WhatsApp Asisten Kelas XI RPL 2)
 
 Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai sumber informasi tunggal (*single source of truth*) untuk jadwal mata pelajaran dan giliran piket kelas **XI RPL 2**, dilengkapi sistem pengingat otomatis terjadwal (pagi & malam H-1) dengan zona waktu **Asia/Makassar (WITA / UTC+8)**.
 
 ---
 
-## 🌟 Fitur Utama
+## Fitur Utama
 
-- 📅 **Jadwal Pelajaran (Read-Only)**:
+- **Jadwal Pelajaran (Read-Only)**:
   - `!jadwal` — Menampilkan jadwal pelajaran hari ini.
   - `!jadwal <hari>` — Menampilkan jadwal pelajaran pada hari tertentu (contoh: `!jadwal senin`).
-- 🧹 **Piket Kelas (Read-Only)**:
+- **Piket Kelas (Read-Only)**:
   - `!piket` — Menampilkan daftar petugas piket hari ini.
   - `!piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `!piket rabu`).
-- 🆔 **Utility Group ID Helper**:
+- **Utility Group ID Helper**:
   - `!id` / `!groupid` — Menampilkan JID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di file `.env`.
-- 📖 **Menu Bantuan**:
+- **Menu Bantuan**:
   - `!help` / `!menu` — Menampilkan daftar perintah yang tersedia.
-- ⏰ **Automated Scheduler (WITA)**:
+- **Automated Scheduler (WITA)**:
   - **Pagi (06:00 WITA, Senin–Jumat)**: Auto-broadcast jadwal mapel & daftar piket hari berjalan ke grup kelas.
   - **Malam (20:00 WITA, Minggu–Kamis)**: Auto-reminder H-1 daftar petugas piket untuk esok hari.
 
 ---
 
-## 🏗️ Struktur Proyek
+## Struktur Proyek
 
 ```
 Bot-erpeel/
@@ -53,7 +53,7 @@ Bot-erpeel/
 
 ---
 
-## ⚙️ Persyaratan Sistem
+## Persyaratan Sistem
 
 - **Node.js**: Versi 20+ (Direkomendasikan Node.js v22 atau v24)
 - **NPM**: Versi 10+
@@ -61,7 +61,7 @@ Bot-erpeel/
 
 ---
 
-## 🚀 Panduan Instalasi & Penggunaan
+## Panduan Instalasi & Penggunaan
 
 ### 1. Kloning Repositori & Instal Dependensi
 ```bash
@@ -111,12 +111,12 @@ Saat pertama kali dijalankan, scan QR Code yang muncul di terminal menggunakan f
 
 ---
 
-## 🛡️ Keamanan & Kredensial
+## Keamanan & Kredensial
 
 - Folder `auth_info/`, file `.env`, serta file database SQLite `*.sqlite` telah dikonfigurasi di `.gitignore` agar tidak pernah ter-commit ke repositori publik.
 - Seluruh data jadwal dan piket pada chat WhatsApp bersifat murni *read-only* untuk mencegah pengubahan data tanpa izin.
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 ISC License

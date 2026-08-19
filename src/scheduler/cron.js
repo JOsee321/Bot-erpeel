@@ -27,22 +27,22 @@ export async function broadcastPagi(sock) {
   const listJadwal = queries.getJadwalByHari(today);
   const piketData = queries.getPiketByHari(today);
 
-  let message = `🌅 *SEMANGAT PAGI RPL 2! — ${formattedToday.toUpperCase()}*\n`;
-  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  let message = `*JADWAL KELAS RPL 2 - ${formattedToday.toUpperCase()}*\n`;
+  message += `----------------------------------------\n`;
 
   // Bagian Jadwal
-  message += `📅 *Jadwal Pelajaran Hari Ini:*\n`;
+  message += `*Jadwal Pelajaran:*\n`;
   if (listJadwal && listJadwal.length > 0) {
     for (const item of listJadwal) {
-      message += `*${item.jam_ke}.* ${item.mapel}\n`;
+      message += `${item.jam_ke}. ${item.mapel}\n`;
     }
   } else {
-    message += `_Belum ada jadwal pelajaran yang diatur._\n`;
+    message += `Belum ada data jadwal untuk hari ${formattedToday}.\n`;
   }
   message += `\n`;
 
   // Bagian Piket
-  message += `🧹 *Petugas Piket Hari Ini:*\n`;
+  message += `*Petugas Piket Hari Ini:*\n`;
   if (piketData && piketData.nama_petugas) {
     const listPetugas = piketData.nama_petugas
       .split(',')
@@ -52,11 +52,8 @@ export async function broadcastPagi(sock) {
       message += `• ${nama}\n`;
     }
   } else {
-    message += `_Belum ada petugas piket yang diatur._\n`;
+    message += `Belum ada data piket untuk hari ${formattedToday}.\n`;
   }
-
-  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `_Semangat belajar dan mari jaga kebersihan kelas kita bersama! ✨_`;
 
   try {
     logger.info(`[CRON] Mengirim broadcast pagi ke ${config.groupJid}...`);
@@ -81,9 +78,9 @@ export async function broadcastReminderPiketMalam(sock) {
   const formattedTomorrow = capitalizeDay(tomorrow);
   const piketData = queries.getPiketByHari(tomorrow);
 
-  let message = `🌙 *REMINDER PIKET BESOK RPL 2 — ${formattedTomorrow.toUpperCase()}*\n`;
-  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `Mengingatkan teman-teman petugas piket untuk hari esok (*${formattedTomorrow}*):\n\n`;
+  let message = `*REMINDER PIKET BESOK (${formattedTomorrow.toUpperCase()})*\n`;
+  message += `----------------------------------------\n`;
+  message += `*Petugas Piket:*\n`;
 
   if (piketData && piketData.nama_petugas) {
     const listPetugas = piketData.nama_petugas
@@ -93,12 +90,10 @@ export async function broadcastReminderPiketMalam(sock) {
     for (const nama of listPetugas) {
       message += `• ${nama}\n`;
     }
-    message += `\n_Harap hadir lebih awal besok pagi untuk melaksanakan tugas piket ya! Terima kasih atas kerjasamanya. 🙏✨_`;
+    message += `\nHarap datang lebih awal untuk menyiapkan kelas.`;
   } else {
-    message += `_Belum ada daftar petugas piket untuk hari ${formattedTomorrow}._\n`;
+    message += `Belum ada data piket untuk hari ${formattedTomorrow}.\n`;
   }
-
-  message += `\n━━━━━━━━━━━━━━━━━━━━━`;
 
   try {
     logger.info(`[CRON] Mengirim reminder piket malam H-1 ke ${config.groupJid}...`);

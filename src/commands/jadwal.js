@@ -10,9 +10,9 @@ export async function handleGetJadwal(ctx) {
 
   if (!isValidDay(targetHari)) {
     return await ctx.reply(
-      `❌ Hari *${ctx.args[0]}* tidak valid.\n\n` +
+      `Hari '${ctx.args[0]}' tidak valid.\n` +
       `Pilihan hari: ${VALID_DAYS.join(', ')}\n` +
-      `Contoh: *${ctx.prefix}jadwal senin* atau cukup *${ctx.prefix}jadwal* untuk hari ini.`
+      `Contoh: ${ctx.prefix}jadwal senin`
     );
   }
 
@@ -21,16 +21,18 @@ export async function handleGetJadwal(ctx) {
 
   if (!listJadwal || listJadwal.length === 0) {
     return await ctx.reply(
-      `📅 *JADWAL PELAJARAN RPL 2 — ${formattedDay.toUpperCase()}*\n\n` +
-      `_Belum ada jadwal yang diatur untuk hari ${formattedDay}._`
+      `*JADWAL PELAJARAN - ${formattedDay.toUpperCase()}*\n` +
+      `----------------------------------------\n` +
+      `Belum ada data jadwal untuk hari ${formattedDay}.`
     );
   }
 
-  let text = `📅 *JADWAL PELAJARAN RPL 2 — ${formattedDay.toUpperCase()}*\n\n`;
+  let text = `*JADWAL PELAJARAN - ${formattedDay.toUpperCase()}*\n`;
+  text += `----------------------------------------\n`;
   for (const item of listJadwal) {
-    text += `*${item.jam_ke}.* ${item.mapel}\n`;
+    text += `${item.jam_ke}. ${item.mapel}\n`;
   }
-  text += `\n_Total: ${listJadwal.length} mata pelajaran_`;
+  text += `\nTotal: ${listJadwal.length} mata pelajaran`;
 
   await ctx.reply(text);
 }
