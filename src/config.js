@@ -12,7 +12,6 @@ export const config = {
   prefix: process.env.PREFIX || '!',
   timezone: process.env.TIMEZONE || 'Asia/Makassar',
   groupJid: process.env.GROUP_JID || '',
-  superAdmin: process.env.SUPER_ADMIN ? String(process.env.SUPER_ADMIN).trim().replace(/[^0-9]/g, '') : '',
   cronJadwalPagi: process.env.CRON_JADWAL_PAGI || '0 6 * * 1-5',
   cronPiketMalam: process.env.CRON_PIKET_MALAM || '0 20 * * 0-4',
   dbPath: process.env.DB_PATH || path.join(rootDir, 'data', 'bot.sqlite'),

@@ -1,4 +1,4 @@
-# Bot RPL 2 (WhatsApp Asisten Kelas XI RPL 2)
+# Bot RPL 2 (WhatsApp Kelas XI RPL 2)
 
 Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai sumber informasi tunggal (*single source of truth*) untuk jadwal mata pelajaran dan giliran piket kelas **XI RPL 2**, dilengkapi sistem pengingat otomatis terjadwal (pagi & malam H-1) dengan zona waktu **Asia/Makassar (WITA / UTC+8)**.
 
