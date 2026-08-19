@@ -19,8 +19,22 @@ import { handleGetId } from './commands/utility.js';
 import { handleGetTanggalMerah } from './commands/tanggalmerah.js';
 import logger from './utils/logger.js';
 
+// Suppress libsignal decryption / key warning spam in terminal
+process.on('warning', (warning) => {
+  if (warning.name === 'DeprecationWarning' || warning.message?.includes('libsignal')) {
+    return;
+  }
+});
+
 // Map penyimpanan command handler terdaftar
 export const commandRegistry = new Map();
+
+// Cache retry pesan untuk mencegah spam retry Baileys
+const msgRetryCounterCache = new Map();
+
+// Guard state untuk mencegah duplicate connection banners dan duplicate cron schedules
+let isSchedulerRunning = false;
+let activeCronJobs = null;
 
 /**
  * Mendaftarkan command handler ke registry
@@ -64,9 +78,11 @@ export async function startWhatsAppBot() {
 
   const sock = makeWASocket({
     version,
-    logger: pino({ level: 'silent' }), // Sembunyikan internal Baileys verbose logs
+    logger: pino({ level: 'silent' }), // Sembunyikan internal Baileys & libsignal logs
     printQRInTerminal: false,
     auth: state,
+    msgRetryCounterCache,
+    getMessage: async () => ({ conversation: '' }),
     generateHighQualityLinkPreview: true,
     syncFullHistory: false,
     defaultQueryTimeoutMs: 60000,
@@ -77,14 +93,21 @@ export async function startWhatsAppBot() {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
-      console.log('\n' + '='.repeat(50));
-      console.log('SCAN QR CODE DI BAWAH INI UNTUK LOGIN WHATSAPP:');
+      console.log('\n[INFO] Silakan scan QR Code berikut:');
       console.log('='.repeat(50));
       qrcode.generate(qr, { small: true });
       console.log('='.repeat(50) + '\n');
     }
 
     if (connection === 'close') {
+      // Reset scheduler dan hentikan cron job aktif agar tidak terjadi duplikasi saat reconnect
+      isSchedulerRunning = false;
+      if (activeCronJobs) {
+        if (activeCronJobs.morningCronJob) activeCronJobs.morningCronJob.stop();
+        if (activeCronJobs.eveningCronJob) activeCronJobs.eveningCronJob.stop();
+        activeCronJobs = null;
+      }
+
       const statusCode = (lastDisconnect?.error instanceof Boom)
         ? lastDisconnect.error.output?.statusCode
         : lastDisconnect?.error?.output?.statusCode;
@@ -103,23 +126,26 @@ export async function startWhatsAppBot() {
         logger.error('Device telah logout. Silakan hapus folder auth_info dan scan QR ulang.');
       }
     } else if (connection === 'open') {
-      console.log('\n====================================================');
-      console.log('BOT RPL 2 BERHASIL TERHUBUNG');
-      console.log('----------------------------------------------------');
-      console.log(`Zona Waktu : ${config.timezone}`);
-      console.log(`Group JID  : ${config.groupJid || '(Belum diatur)'}`);
-      console.log(`Cron Pagi  : 06:00 WITA (Senin - Jumat)`);
-      console.log(`Cron Malam : 20:00 WITA (Minggu - Kamis)`);
-      console.log('====================================================\n');
+      // Guard agar banner dan inisialisasi cron hanya dieksekusi 1 kali per koneksi aktif
+      if (!isSchedulerRunning) {
+        console.log('\n====================================================');
+        console.log('BOT RPL 2 BERHASIL TERHUBUNG');
+        console.log('----------------------------------------------------');
+        console.log(`Zona Waktu : ${config.timezone}`);
+        console.log(`Group JID  : ${config.groupJid || '(Belum diatur)'}`);
+        console.log(`Cron Pagi  : 06:00 WITA (Senin - Jumat)`);
+        console.log(`Cron Malam : 20:00 WITA (Minggu - Kamis)`);
+        console.log('====================================================\n');
 
-      // Hook inisialisasi scheduler
-      try {
-        const { initScheduler } = await import('./scheduler/cron.js').catch(() => ({ initScheduler: null }));
-        if (initScheduler) {
-          initScheduler(sock);
+        try {
+          const { initScheduler } = await import('./scheduler/cron.js').catch(() => ({ initScheduler: null }));
+          if (initScheduler) {
+            activeCronJobs = initScheduler(sock);
+            isSchedulerRunning = true;
+          }
+        } catch (err) {
+          logger.error('Gagal menginisialisasi scheduler', err);
         }
-      } catch (err) {
-        logger.error('Gagal menginisialisasi scheduler', err);
       }
     }
   });
