@@ -1,13 +1,9 @@
 import cron from 'node-cron';
-import pino from 'pino';
 
 import config from '../config.js';
 import queries from '../db/queries.js';
 import { getTodayDayName, getTomorrowDayName, capitalizeDay } from '../utils/date.js';
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-});
+import logger from '../utils/logger.js';
 
 let morningCronJob = null;
 let eveningCronJob = null;
@@ -18,7 +14,7 @@ let eveningCronJob = null;
  */
 export async function broadcastPagi(sock) {
   if (!config.groupJid) {
-    logger.warn('[CRON] GROUP_JID belum diatur di .env. Broadcast pagi dilewati.');
+    logger.warn('GROUP_JID belum diatur di .env. Broadcast pagi dilewati.');
     return;
   }
 
@@ -56,11 +52,11 @@ export async function broadcastPagi(sock) {
   }
 
   try {
-    logger.info(`[CRON] Mengirim broadcast pagi ke ${config.groupJid}...`);
+    logger.cron(`Menjalankan broadcast pagi jam 06:00 WITA ke ${config.groupJid}...`);
     await sock.sendMessage(config.groupJid, { text: message });
-    logger.info('[CRON] Broadcast pagi berhasil dikirim.');
+    logger.cron(`Broadcast pagi berhasil dikirim ke ${config.groupJid}`);
   } catch (error) {
-    logger.error(error, '[CRON] Gagal mengirim broadcast pagi');
+    logger.error('Gagal mengirim broadcast pagi', error);
   }
 }
 
@@ -70,7 +66,7 @@ export async function broadcastPagi(sock) {
  */
 export async function broadcastReminderPiketMalam(sock) {
   if (!config.groupJid) {
-    logger.warn('[CRON] GROUP_JID belum diatur di .env. Reminder piket malam dilewati.');
+    logger.warn('GROUP_JID belum diatur di .env. Reminder piket malam dilewati.');
     return;
   }
 
@@ -96,11 +92,11 @@ export async function broadcastReminderPiketMalam(sock) {
   }
 
   try {
-    logger.info(`[CRON] Mengirim reminder piket malam H-1 ke ${config.groupJid}...`);
+    logger.cron(`Menjalankan reminder piket malam H-1 jam 20:00 WITA ke ${config.groupJid}...`);
     await sock.sendMessage(config.groupJid, { text: message });
-    logger.info('[CRON] Reminder piket malam berhasil dikirim.');
+    logger.cron(`Reminder piket malam berhasil dikirim ke ${config.groupJid}`);
   } catch (error) {
-    logger.error(error, '[CRON] Gagal mengirim reminder piket malam');
+    logger.error('Gagal mengirim reminder piket malam', error);
   }
 }
 
@@ -113,23 +109,23 @@ export function initScheduler(sock) {
   if (morningCronJob) morningCronJob.stop();
   if (eveningCronJob) eveningCronJob.stop();
 
-  logger.info(`[SCHEDULER] Mengonfigurasi Cron Jobs dengan timezone: ${config.timezone}`);
+  logger.info(`Mengonfigurasi Cron Jobs dengan timezone: ${config.timezone}`);
 
   // 1. Cron Pagi: Jadwal & Piket hari ini
   if (cron.validate(config.cronJadwalPagi)) {
     morningCronJob = cron.schedule(
       config.cronJadwalPagi,
       () => {
-        logger.info('[CRON-TRIGGER] Menjalankan tugas auto-broadcast jadwal pagi...');
-        broadcastPagi(sock).catch((err) => logger.error(err, '[CRON-ERROR] broadcastPagi failed'));
+        logger.cron('Menjalankan tugas auto-broadcast jadwal pagi...');
+        broadcastPagi(sock).catch((err) => logger.error('Gagal broadcast pagi', err));
       },
       {
         timezone: config.timezone,
       }
     );
-    logger.info(`[SCHEDULER] Cron Jadwal Pagi aktif: "${config.cronJadwalPagi}" (${config.timezone})`);
+    logger.info(`Cron Jadwal Pagi aktif: "${config.cronJadwalPagi}" (${config.timezone})`);
   } else {
-    logger.error(`[SCHEDULER] Cron pattern tidak valid: ${config.cronJadwalPagi}`);
+    logger.error(`Cron pattern tidak valid: ${config.cronJadwalPagi}`);
   }
 
   // 2. Cron Malam: Reminder H-1 Petugas Piket esok hari
@@ -137,16 +133,16 @@ export function initScheduler(sock) {
     eveningCronJob = cron.schedule(
       config.cronPiketMalam,
       () => {
-        logger.info('[CRON-TRIGGER] Menjalankan tugas auto-reminder piket malam H-1...');
-        broadcastReminderPiketMalam(sock).catch((err) => logger.error(err, '[CRON-ERROR] broadcastReminderPiketMalam failed'));
+        logger.cron('Menjalankan tugas auto-reminder piket malam H-1...');
+        broadcastReminderPiketMalam(sock).catch((err) => logger.error('Gagal reminder piket malam', err));
       },
       {
         timezone: config.timezone,
       }
     );
-    logger.info(`[SCHEDULER] Cron Piket Malam aktif: "${config.cronPiketMalam}" (${config.timezone})`);
+    logger.info(`Cron Piket Malam aktif: "${config.cronPiketMalam}" (${config.timezone})`);
   } else {
-    logger.error(`[SCHEDULER] Cron pattern tidak valid: ${config.cronPiketMalam}`);
+    logger.error(`Cron pattern tidak valid: ${config.cronPiketMalam}`);
   }
 
   return {

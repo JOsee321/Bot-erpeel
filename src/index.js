@@ -16,10 +16,7 @@ import { handleGetJadwal } from './commands/jadwal.js';
 import { handleGetPiket } from './commands/piket.js';
 import { handleHelp } from './commands/help.js';
 import { handleGetId } from './commands/utility.js';
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-});
+import logger from './utils/logger.js';
 
 // Map penyimpanan command handler terdaftar
 export const commandRegistry = new Map();
@@ -46,10 +43,10 @@ registerCommand(['help', 'menu', 'panduan'], handleHelp);
  * Inisialisasi dan koneksi Baileys WhatsApp Engine
  */
 export async function startWhatsAppBot() {
-  logger.info('[BOT] Menginisialisasi Database SQLite...');
+  logger.info('Menginisialisasi Database SQLite...');
   initDB();
 
-  logger.info(`[BOT] Memuat Auth State dari ${config.authInfoPath}...`);
+  logger.info('Memuat Auth State dari folder auth_info...');
   if (!fs.existsSync(config.authInfoPath)) {
     fs.mkdirSync(config.authInfoPath, { recursive: true });
   }
@@ -60,11 +57,12 @@ export async function startWhatsAppBot() {
     isLatest: false,
   }));
 
-  logger.info(`[BOT] Menggunakan WA Web Version: ${version.join('.')} (isLatest: ${isLatest})`);
+  logger.info(`Menggunakan WA Web Version: ${version.join('.')} (isLatest: ${isLatest})`);
+  logger.info('Menghubungkan ke WhatsApp...');
 
   const sock = makeWASocket({
     version,
-    logger: pino({ level: 'silent' }), // Sembunyikan internal Baileys verbose log
+    logger: pino({ level: 'silent' }), // Sembunyikan internal Baileys verbose logs
     printQRInTerminal: false,
     auth: state,
     generateHighQualityLinkPreview: true,
@@ -91,32 +89,35 @@ export async function startWhatsAppBot() {
 
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
       logger.warn(
-        `[BOT] Koneksi terputus. Status Code: ${statusCode}, Reason: ${lastDisconnect?.error?.message || 'Unknown'}. Reconnecting: ${shouldReconnect}`
+        `Koneksi terputus (Status Code: ${statusCode || 'Unknown'}). Reconnecting: ${shouldReconnect}`
       );
 
       if (shouldReconnect) {
-        logger.info('[BOT] Mencoba menghubungkan kembali dalam 5 detik...');
+        logger.info('Mencoba menghubungkan kembali dalam 5 detik...');
         setTimeout(() => {
-          startWhatsAppBot().catch((err) => logger.error(err, '[BOT] Reconnect failed'));
+          startWhatsAppBot().catch((err) => logger.error('Gagal reconnect', err));
         }, 5000);
       } else {
-        logger.error('[BOT] Device telah logout. Silakan hapus folder auth_info dan scan QR ulang.');
+        logger.error('Device telah logout. Silakan hapus folder auth_info dan scan QR ulang.');
       }
     } else if (connection === 'open') {
-      logger.info('====================================================');
-      logger.info('BOT WHATSAPP RPL 2 BERHASIL TERHUBUNG!');
-      logger.info(`Zona Waktu: ${config.timezone}`);
-      logger.info(`Group JID: ${config.groupJid || 'Belum diatur'}`);
-      logger.info('====================================================');
+      console.log('\n====================================================');
+      console.log('BOT RPL 2 BERHASIL TERHUBUNG');
+      console.log('----------------------------------------------------');
+      console.log(`Zona Waktu : ${config.timezone}`);
+      console.log(`Group JID  : ${config.groupJid || '(Belum diatur)'}`);
+      console.log(`Cron Pagi  : 06:00 WITA (Senin - Jumat)`);
+      console.log(`Cron Malam : 20:00 WITA (Minggu - Kamis)`);
+      console.log('====================================================\n');
 
-      // Hook inisialisasi scheduler (akan diaktifkan pada Tahap 4)
+      // Hook inisialisasi scheduler
       try {
         const { initScheduler } = await import('./scheduler/cron.js').catch(() => ({ initScheduler: null }));
         if (initScheduler) {
           initScheduler(sock);
         }
       } catch (err) {
-        logger.debug('[BOT] Scheduler belum siap atau dalam inisialisasi bertahap');
+        logger.error('Gagal menginisialisasi scheduler', err);
       }
     }
   });
@@ -138,17 +139,17 @@ export async function startWhatsAppBot() {
 
 // Global process error handlers untuk stabilitas bot
 process.on('uncaughtException', (err) => {
-  logger.error(err, '[FATAL] Uncaught Exception');
+  logger.error('Uncaught Exception', err);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error({ reason, promise }, '[FATAL] Unhandled Rejection');
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection', reason);
 });
 
 // Jalankan bot jika file ini dieksekusi langsung
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname.replace(/^\/([a-zA-Z]:)/, '$1'))) {
   startWhatsAppBot().catch((err) => {
-    logger.error(err, '[BOT] Fatal error saat start');
+    logger.error('Fatal error saat start', err);
   });
 }
 

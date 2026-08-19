@@ -1,9 +1,5 @@
 import config from './config.js';
-import pino from 'pino';
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-});
+import logger from './utils/logger.js';
 
 /**
  * Ekstraksi teks isi pesan dari berbagai jenis payload Baileys
@@ -68,7 +64,7 @@ export async function handleIncomingMessage(sock, m, commandRegistry = new Map()
       try {
         return await sock.sendMessage(remoteJid, { text: replyText, ...options }, { quoted: m });
       } catch (err) {
-        logger.error(err, `[ROUTER] Gagal mengirim balasan ke ${remoteJid}`);
+        logger.error(`Gagal mengirim balasan ke ${remoteJid}`, err);
       }
     };
 
@@ -86,12 +82,9 @@ export async function handleIncomingMessage(sock, m, commandRegistry = new Map()
       prefix: config.prefix,
     };
 
-    logger.info({
-      from: senderNumber,
-      chat: remoteJid,
-      cmd: commandName,
-      args,
-    }, `[ROUTER] Command received: ${config.prefix}${commandName}`);
+    // Log terminal yang ringkas dan manusiawi
+    const chatType = isGroup ? 'Group' : 'Private';
+    logger.cmd(`${config.prefix}${commandName}`, senderNumber || 'Unknown', chatType);
 
     // Eksekusi command handler jika terdaftar
     const handler = commandRegistry.get(commandName);
@@ -99,14 +92,12 @@ export async function handleIncomingMessage(sock, m, commandRegistry = new Map()
       try {
         await handler(ctx);
       } catch (cmdError) {
-        logger.error(cmdError, `[ROUTER-CMD-ERROR] Error executing command '${commandName}'`);
+        logger.error(`Error saat mengeksekusi command '${commandName}'`, cmdError);
         await reply(`Terjadi kesalahan saat memproses perintah *${config.prefix}${commandName}*. Silakan coba beberapa saat lagi.`);
       }
-    } else {
-      logger.debug(`[ROUTER] Command not found: ${commandName}`);
     }
   } catch (error) {
-    logger.error(error, '[ROUTER] Error processing message payload');
+    logger.error('Error saat memproses payload pesan', error);
   }
 }
 
