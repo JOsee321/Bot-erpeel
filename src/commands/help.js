@@ -1,5 +1,5 @@
 /**
- * Handler command !help / !menu
+ * Handler command .help / .menu / .panduan
  * @param {object} ctx
  */
 export async function handleHelp(ctx) {
@@ -13,7 +13,6 @@ export async function handleHelp(ctx) {
   text += `• *${p}piket* : Petugas piket hari ini\n`;
   text += `• *${p}piket <hari>* : Petugas piket hari tertentu\n`;
   text += `• *${p}tanggalmerah* : Cek hari libur nasional bulan ini\n`;
-  text += `• *${p}id* : Cek ID / JID obrolan saat ini\n`;
   text += `• *${p}help* : Menampilkan menu ini\n\n`;
 
   text += `*Pengingat Otomatis (WITA):*\n`;
