@@ -19,7 +19,7 @@ export async function handleHelp(ctx) {
   text += `• 06:00 WITA : Jadwal pelajaran & piket harian\n`;
   text += `• 20:00 WITA : Reminder piket esok hari (H-1)\n`;
   text += `----------------------------------------\n`;
-  text += `Bot Asisten Kelas XI RPL 2`;
+  text += `Bot XI RPL 2`;
 
   await ctx.reply(text);
 }

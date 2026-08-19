@@ -107,6 +107,7 @@ await handleHelp(helpCtx);
 assert.match(helpCtx.getRepliedText(), /\*BOT RPL 2\*/);
 assert.match(helpCtx.getRepliedText(), /\*Daftar Perintah:\*/);
 assert.match(helpCtx.getRepliedText(), /!jadwal/);
+assert.match(helpCtx.getRepliedText(), /Bot XI RPL 2/);
 
 // (d) Test Utility Command !id
 const idCtx = createMockCtx('id', [], true);

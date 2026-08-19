@@ -6,7 +6,7 @@ import config from '../config.js';
 let dbInstance = null;
 
 /**
- * Inisialisasi koneksi SQLite dan skema tabel
+ * Inisialisasi koneksi SQLite dan skema tabel (jadwal & piket)
  * @param {string} [customPath] - Path opsional untuk keperluan testing/custom
  * @returns {DatabaseSync} Instance database SQLite
  */
@@ -32,7 +32,7 @@ export function initDB(customPath = null) {
     console.warn('[DB] Warning setting PRAGMA:', err.message);
   }
 
-  // Skema Tabel Sesuai Spesifikasi PRD
+  // Skema Tabel Jadwal & Piket
   db.exec(`
     CREATE TABLE IF NOT EXISTS jadwal (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,17 +47,7 @@ export function initDB(customPath = null) {
       hari TEXT NOT NULL UNIQUE,
       nama_petugas TEXT NOT NULL
     );
-
-    CREATE TABLE IF NOT EXISTS admin (
-      nomor TEXT PRIMARY KEY
-    );
   `);
-
-  // Auto-insert SUPER_ADMIN jika dikonfigurasi
-  if (config.superAdmin) {
-    const insertAdmin = db.prepare('INSERT OR IGNORE INTO admin (nomor) VALUES (?)');
-    insertAdmin.run(config.superAdmin);
-  }
 
   dbInstance = db;
 

@@ -30,7 +30,7 @@ export function getAllJadwal() {
  * @param {string} hari - Nama hari (contoh: senin)
  * @param {number} jamKe - Nomor jam pelajaran (angka positif)
  * @param {string} mapel - Nama mata pelajaran
- * @returns {Database.RunResult}
+ * @returns {object}
  */
 export function setJadwal(hari, jamKe, mapel) {
   const db = getDB();
@@ -48,7 +48,7 @@ export function setJadwal(hari, jamKe, mapel) {
  * Menghapus satu slot jadwal pelajaran
  * @param {string} hari - Nama hari
  * @param {number} jamKe - Nomor jam pelajaran
- * @returns {Database.RunResult}
+ * @returns {object}
  */
 export function deleteJadwal(hari, jamKe) {
   const db = getDB();
@@ -86,7 +86,7 @@ export function getAllPiket() {
  * Menambah atau memperbarui susunan piket (UPSERT)
  * @param {string} hari - Nama hari
  * @param {string} namaPetugas - Nama-nama petugas piket (comma-separated string)
- * @returns {Database.RunResult}
+ * @returns {object}
  */
 export function setPiket(hari, namaPetugas) {
   const db = getDB();
@@ -103,65 +103,13 @@ export function setPiket(hari, namaPetugas) {
 /**
  * Menghapus susunan piket pada hari tertentu
  * @param {string} hari - Nama hari
- * @returns {Database.RunResult}
+ * @returns {object}
  */
 export function deletePiket(hari) {
   const db = getDB();
   const normalizedHari = hari.toLowerCase().trim();
   const stmt = db.prepare('DELETE FROM piket WHERE LOWER(hari) = ?');
   return stmt.run(normalizedHari);
-}
-
-// ==========================================
-// QUERIES: ADMIN & PERMISSION
-// ==========================================
-
-/**
- * Memeriksa apakah suatu nomor terdaftar sebagai admin
- * @param {string} nomor - Nomor telepon pengirim (angka)
- * @returns {boolean}
- */
-export function isAdmin(nomor) {
-  if (!nomor) return false;
-  const db = getDB();
-  const cleanNomor = String(nomor).replace(/[^0-9]/g, '');
-  const stmt = db.prepare('SELECT nomor FROM admin WHERE nomor = ?');
-  const result = stmt.get(cleanNomor);
-  return Boolean(result);
-}
-
-/**
- * Menambahkan nomor admin baru
- * @param {string} nomor - Nomor telepon
- * @returns {Database.RunResult}
- */
-export function addAdmin(nomor) {
-  const db = getDB();
-  const cleanNomor = String(nomor).replace(/[^0-9]/g, '');
-  const stmt = db.prepare('INSERT OR IGNORE INTO admin (nomor) VALUES (?)');
-  return stmt.run(cleanNomor);
-}
-
-/**
- * Menghapus nomor admin
- * @param {string} nomor - Nomor telepon
- * @returns {Database.RunResult}
- */
-export function deleteAdmin(nomor) {
-  const db = getDB();
-  const cleanNomor = String(nomor).replace(/[^0-9]/g, '');
-  const stmt = db.prepare('DELETE FROM admin WHERE nomor = ?');
-  return stmt.run(cleanNomor);
-}
-
-/**
- * Mendapatkan seluruh daftar nomor admin
- * @returns {Array<{nomor: string}>}
- */
-export function getAllAdmins() {
-  const db = getDB();
-  const stmt = db.prepare('SELECT nomor FROM admin');
-  return stmt.all();
 }
 
 export default {
@@ -173,8 +121,4 @@ export default {
   getAllPiket,
   setPiket,
   deletePiket,
-  isAdmin,
-  addAdmin,
-  deleteAdmin,
-  getAllAdmins,
 };
