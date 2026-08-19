@@ -16,6 +16,8 @@ Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai su
   - `!piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `!piket rabu`).
   - `!setpiket <hari> <nama1, nama2, ...>` — Menambah/mengubah susunan petugas piket *(Khusus Admin)*.
   - `!hapuspiket <hari>` — Menghapus susunan petugas piket *(Khusus Admin)*.
+- 🆔 **Utility JID / Group Helper**:
+  - `!id` / `!groupid` — Menampilkan JID / ID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di `.env`.
 - 👑 **Sistem Hak Akses & Permission**:
   - Validasi otomatis nomor WhatsApp admin & super admin sebelum eksekusi command penulisan data.
 - ⏰ **Automated Scheduler (WITA)**:
@@ -37,10 +39,12 @@ Bot-erpeel/
 │   ├── commands/
 │   │   ├── jadwal.js     # Handler !jadwal, !setjadwal, !hapusjadwal
 │   │   ├── piket.js      # Handler !piket, !setpiket, !hapuspiket
+│   │   ├── utility.js    # Handler !id & !groupid
 │   │   └── help.js       # Handler !help / !menu
 │   ├── db/
 │   │   ├── init.js       # Inisialisasi SQLite schema (WAL mode)
-│   │   └── queries.js    # Data access layer & helper queries
+│   │   ├── queries.js    # Data access layer & helper queries
+│   │   └── seed.js       # Seeder data riil kelas XI RPL 2
 │   ├── middleware/
 │   │   └── isAdmin.js    # Verifikasi hak akses admin & normalisasi nomor
 │   ├── scheduler/
@@ -48,7 +52,7 @@ Bot-erpeel/
 │   └── utils/
 │       └── date.js       # Utilitas penanggalan & zona waktu Asia/Makassar
 ├── test/
-│   └── db-test.js        # Smoke test & database seeder
+│   └── db-test.js        # Smoke test & database seeder validation
 ├── auth_info/            # Multi-device session Baileys (Git ignored)
 ├── .env.example          # Template environment variable
 ├── package.json
@@ -91,13 +95,19 @@ CRON_PIKET_MALAM=0 20 * * 0-4
 DB_PATH=./data/bot.sqlite
 ```
 
-### 3. Menjalankan Smoke Test
+### 3. Mengisi Data Riil Kelas (Seeding)
+Jalankan script seeder untuk memasukkan jadwal pelajaran & daftar piket kelas XI RPL 2 ke dalam database SQLite:
+```bash
+npm run seed
+```
+
+### 4. Menjalankan Smoke Test
 Pastikan seluruh logika database, timezone, dan command handler bekerja dengan baik:
 ```bash
 npm test
 ```
 
-### 4. Menjalankan Bot
+### 5. Menjalankan Bot
 ```bash
 # Menjalankan bot (Production)
 npm start

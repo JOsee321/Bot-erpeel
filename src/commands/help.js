@@ -20,6 +20,7 @@ export async function handleHelp(ctx) {
   text += `• *${p}piket* — Lihat petugas piket hari ini\n`;
   text += `• *${p}piket <hari>* — Lihat petugas piket hari tertentu\n`;
   text += `  _Contoh: ${p}piket rabu_\n`;
+  text += `• *${p}id* / *${p}groupid* — Cek Chat JID / Group ID saat ini\n`;
   text += `• *${p}help* / *${p}menu* — Tampilkan panduan ini\n\n`;
 
   if (isAdminUser) {

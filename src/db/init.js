@@ -59,9 +59,7 @@ export function initDB(customPath = null) {
     insertAdmin.run(config.superAdmin);
   }
 
-  if (!customPath) {
-    dbInstance = db;
-  }
+  dbInstance = db;
 
   return db;
 }

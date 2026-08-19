@@ -122,7 +122,24 @@ const helpAdminCtx = createMockCtx('6281234567890', 'help');
 await handleHelp(helpAdminCtx);
 assert.match(helpAdminCtx.getRepliedText(), /PENGURUS KELAS \/ ADMIN/i);
 
-// (e) Test Seeder data contoh untuk hari ini & besok
+// (e) Test Utility Command !id
+const { handleGetId } = await import('../src/commands/utility.js');
+const groupIdCtx = {
+  prefix: '!',
+  commandName: 'id',
+  args: [],
+  senderNumber: '6281234567890',
+  remoteJid: '1203631234567890@g.us',
+  isGroup: true,
+  reply: async (text) => text,
+};
+let repliedIdText = '';
+groupIdCtx.reply = async (text) => { repliedIdText = text; return text; };
+await handleGetId(groupIdCtx);
+assert.match(repliedIdText, /1203631234567890@g\.us/);
+assert.match(repliedIdText, /Grup WhatsApp/);
+
+// (f) Test Seeder data contoh untuk hari ini & besok
 queries.setJadwal(todayName, 1, 'Pendidikan Agama');
 queries.setJadwal(todayName, 2, 'Basis Data');
 queries.setPiket(todayName, 'Siti, Rian, Bayu');

@@ -15,6 +15,7 @@ import { handleIncomingMessage } from './router.js';
 import { handleGetJadwal, handleSetJadwal, handleHapusJadwal } from './commands/jadwal.js';
 import { handleGetPiket, handleSetPiket, handleHapusPiket } from './commands/piket.js';
 import { handleHelp } from './commands/help.js';
+import { handleGetId } from './commands/utility.js';
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -42,6 +43,7 @@ registerCommand(['hapusjadwal'], handleHapusJadwal);
 registerCommand(['piket'], handleGetPiket);
 registerCommand(['setpiket'], handleSetPiket);
 registerCommand(['hapuspiket'], handleHapusPiket);
+registerCommand(['id', 'groupid'], handleGetId);
 registerCommand(['help', 'menu', 'panduan'], handleHelp);
 
 /**
