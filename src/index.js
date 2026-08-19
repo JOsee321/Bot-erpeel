@@ -139,6 +139,15 @@ export async function startWhatsAppBot() {
   return sock;
 }
 
+// Global process error handlers untuk stabilitas bot
+process.on('uncaughtException', (err) => {
+  logger.error(err, '[FATAL] Uncaught Exception');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error({ reason, promise }, '[FATAL] Unhandled Rejection');
+});
+
 // Jalankan bot jika file ini dieksekusi langsung
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname.replace(/^\/([a-zA-Z]:)/, '$1'))) {
   startWhatsAppBot().catch((err) => {
