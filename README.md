@@ -7,17 +7,17 @@ Bot WhatsApp otomatis berbasis **Node.js (ES Module)** yang berfungsi sebagai su
 ## Fitur Utama
 
 - **Jadwal Pelajaran (Read-Only)**:
-  - `!jadwal` — Menampilkan jadwal pelajaran hari ini.
-  - `!jadwal <hari>` — Menampilkan jadwal pelajaran pada hari tertentu (contoh: `!jadwal senin`).
+  - `.jadwal` — Menampilkan jadwal pelajaran hari ini.
+  - `.jadwal <hari>` — Menampilkan jadwal pelajaran pada hari tertentu (contoh: `.jadwal senin`).
 - **Piket Kelas (Read-Only)**:
-  - `!piket` — Menampilkan daftar petugas piket hari ini.
-  - `!piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `!piket rabu`).
+  - `.piket` — Menampilkan daftar petugas piket hari ini.
+  - `.piket <hari>` — Menampilkan daftar petugas piket pada hari tertentu (contoh: `.piket rabu`).
 - **Hari Libur Nasional**:
-  - `!tanggalmerah` / `!libur` — Menampilkan daftar hari libur nasional bulan berjalan.
+  - `.tanggalmerah` / `.libur` — Menampilkan daftar hari libur nasional bulan berjalan.
 - **Utility Group ID Helper**:
-  - `!id` / `!groupid` — Menampilkan JID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di file `.env`.
+  - `.id` / `.groupid` — Menampilkan JID obrolan saat ini untuk mempermudah pengisian variabel `GROUP_JID` di file `.env`.
 - **Menu Bantuan**:
-  - `!help` / `!menu` — Menampilkan daftar perintah yang tersedia.
+  - `.help` / `.menu` — Menampilkan daftar perintah yang tersedia.
 - **Automated Scheduler (WITA)**:
   - **Pagi (06:00 WITA, Senin–Jumat)**: Auto-broadcast jadwal mapel & daftar piket hari berjalan ke grup kelas.
   - **Malam (20:00 WITA, Minggu–Kamis)**: Auto-reminder H-1 daftar petugas piket untuk esok hari.
@@ -33,11 +33,11 @@ Bot-erpeel/
 │   ├── config.js         # Konfigurasi environment variables & path
 │   ├── router.js         # Routing pesan & error boundary dispatcher
 │   ├── commands/
-│   │   ├── jadwal.js     # Handler !jadwal
-│   │   ├── piket.js      # Handler !piket
-│   │   ├── tanggalmerah.js # Handler !tanggalmerah / !libur
-│   │   ├── utility.js    # Handler !id & !groupid
-│   │   └── help.js       # Handler !help / !menu
+│   │   ├── jadwal.js     # Handler .jadwal
+│   │   ├── piket.js      # Handler .piket
+│   │   ├── tanggalmerah.js # Handler .tanggalmerah / .libur
+│   │   ├── utility.js    # Handler .id & .groupid
+│   │   └── help.js       # Handler .help / .menu
 │   ├── db/
 │   │   ├── init.js       # Inisialisasi SQLite schema (WAL mode)
 │   │   ├── queries.js    # Data access layer & helper queries
@@ -45,7 +45,8 @@ Bot-erpeel/
 │   ├── scheduler/
 │   │   └── cron.js       # Cron job broadcast pagi (06:00) & reminder piket H-1 (20:00)
 │   └── utils/
-│       └── date.js       # Utilitas penanggalan & zona waktu Asia/Makassar
+│       ├── date.js       # Utilitas penanggalan & zona waktu Asia/Makassar
+│       └── logger.js     # Human-readable console logger
 ├── test/
 │   └── db-test.js        # Smoke test & validation suite
 ├── auth_info/            # Multi-device session Baileys (Git ignored)
@@ -81,7 +82,7 @@ cp .env.example .env
 
 Contoh isi `.env`:
 ```env
-PREFIX=!
+PREFIX=.
 TIMEZONE=Asia/Makassar
 GROUP_JID=120363421062818190@g.us
 CRON_JADWAL_PAGI=0 6 * * 1-5

@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 export const config = {
-  prefix: process.env.PREFIX || '!',
+  prefix: process.env.PREFIX || '.',
   timezone: process.env.TIMEZONE || 'Asia/Makassar',
   groupJid: process.env.GROUP_JID || '',
   cronJadwalPagi: process.env.CRON_JADWAL_PAGI || '0 6 * * 1-5',

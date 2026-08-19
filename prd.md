@@ -1,4 +1,4 @@
-# PRD — Bot RPL 2 (WhatsApp Asisten Kelas XI RPL 2)
+# PRD — Bot RPL 2 (WhatsApp Kelas XI RPL 2)
 
 **Versi:** 1.1  
 **Tanggal:** 19 Agustus 2026  
@@ -20,7 +20,7 @@ Bot RPL 2 hadir sebagai sumber informasi tunggal (*single source of truth*) yang
 
 ## 2. Tujuan Produk
 
-1. Memberikan akses instan terhadap jadwal pelajaran, susunan piket, dan tanggal merah nasional lewat perintah WhatsApp.
+1. Memberikan akses instan terhadap jadwal pelajaran, susunan piket, dan tanggal merah nasional lewat perintah WhatsApp (Prefix `.`).
 2. Mengirimkan pengingat proaktif otomatis setiap pagi (06:00 WITA) dan malam hari H-1 (20:00 WITA) ke grup kelas.
 3. Menjaga stabilitas dan kebersihan data melalui arsitektur *Read-Only* via chat WhatsApp (perubahan data dikelola langsung pada database seeder).
 
@@ -37,17 +37,17 @@ Bot RPL 2 hadir sebagai sumber informasi tunggal (*single source of truth*) yang
 ## 4. Lingkup (Scope)
 
 ### 4.1 In-Scope (Fase 1 - Active)
-- Perintah melihat jadwal pelajaran hari ini dan per hari (`!jadwal`, `!jadwal <hari>`).
-- Perintah melihat daftar petugas piket hari ini dan per hari (`!piket`, `!piket <hari>`).
-- Perintah pengecekan hari libur nasional bulan berjalan (`!tanggalmerah` / `!libur`).
-- Perintah helper pendeteksi Group JID (`!id` / `!groupid`).
-- Panduan menu bantuan ringkas (`!help` / `!menu`).
+- Perintah melihat jadwal pelajaran hari ini dan per hari (`.jadwal`, `.jadwal <hari>`).
+- Perintah melihat daftar petugas piket hari ini dan per hari (`.piket`, `.piket <hari>`).
+- Perintah pengecekan hari libur nasional bulan berjalan (`.tanggalmerah` / `.libur`).
+- Perintah helper pendeteksi Group JID (`.id` / `.groupid`).
+- Panduan menu bantuan ringkas (`.help` / `.menu`).
 - Pengingat otomatis pagi (Jadwal & Piket hari ini) pukul 06:00 WITA (Senin–Jumat).
 - Pengingat otomatis malam (Reminder H-1 Piket esok hari) pukul 20:00 WITA (Minggu–Kamis).
 - Format tampilan teks polos tanpa emoji yang bersih dan terstruktur.
 
 ### 4.2 Out-of-Scope (Fase Berikutnya)
-- Fitur absensi harian (`!absen`, rekap kehadiran).
+- Fitur absensi harian (`.absen`, rekap kehadiran).
 - Fitur interaktif tambahan (polling, games, quote generator).
 - Integrasi Google Sheets / Web Dashboard.
 
@@ -73,28 +73,28 @@ Bot RPL 2 hadir sebagai sumber informasi tunggal (*single source of truth*) yang
 
 | Command | Akses | Deskripsi | Format Output |
 |---|---|---|---|
-| `!jadwal` | Semua | Menampilkan jadwal pelajaran hari ini | `*JADWAL PELAJARAN - [HARI]*\n----------------------------------------\n1. [Jam] : [Mapel]...` |
-| `!jadwal <hari>` | Semua | Menampilkan jadwal hari tertentu | `!jadwal senin`, `!jadwal jumat`, dll. |
+| `.jadwal` | Semua | Menampilkan jadwal pelajaran hari ini | `*JADWAL PELAJARAN - [HARI]*\n----------------------------------------\n1. [Jam] : [Mapel]...` |
+| `.jadwal <hari>` | Semua | Menampilkan jadwal hari tertentu | `.jadwal senin`, `.jadwal jumat`, dll. |
 
 ### 6.2 Command: Petugas Piket
 
 | Command | Akses | Deskripsi | Format Output |
 |---|---|---|---|
-| `!piket` | Semua | Menampilkan petugas piket hari ini | `*PETUGAS PIKET - [HARI]*\n----------------------------------------\n• [Nama 1]\n• [Nama 2]...` |
-| `!piket <hari>` | Semua | Menampilkan piket hari tertentu | `!piket rabu`, `!piket kamis`, dll. |
+| `.piket` | Semua | Menampilkan petugas piket hari ini | `*PETUGAS PIKET - [HARI]*\n----------------------------------------\n• [Nama 1]\n• [Nama 2]...` |
+| `.piket <hari>` | Semua | Menampilkan piket hari tertentu | `.piket rabu`, `.piket kamis`, dll. |
 
 ### 6.3 Command: Tanggal Merah (Hari Libur Nasional)
 
 | Command | Akses | Deskripsi | Sumber Data & Format Output |
 |---|---|---|---|
-| `!tanggalmerah` / `!libur` | Semua | Menampilkan daftar libur nasional bulan berjalan | Integrasi API publik `api-hari-libur.vercel.app`\n`*TANGGAL MERAH - [BULAN] [TAHUN]*\n----------------------------------------\n• [DD MMMM YYYY] : [Keterangan Libur]` |
+| `.tanggalmerah` / `.libur` | Semua | Menampilkan daftar libur nasional bulan berjalan | Integrasi API publik `api-hari-libur.vercel.app`\n`*TANGGAL MERAH - [BULAN] [TAHUN]*\n----------------------------------------\n• [DD MMMM YYYY] : [Keterangan Libur]` |
 
 ### 6.4 Command: Utility Group ID & Help
 
 | Command | Akses | Deskripsi | Format Output |
 |---|---|---|---|
-| `!id` / `!groupid` | Semua | Menampilkan JID obrolan saat ini | Menampilkan string JID grup/private untuk disalin ke `.env` |
-| `!help` / `!menu` | Semua | Menampilkan daftar seluruh perintah aktif | Panduan menu bot yang ringkas dan bersih |
+| `.id` / `.groupid` | Semua | Menampilkan JID obrolan saat ini | Menampilkan string JID grup/private untuk disalin ke `.env` |
+| `.help` / `.menu` | Semua | Menampilkan daftar seluruh perintah aktif | Panduan menu bot yang ringkas dan bersih |
 
 ### 6.5 Automated Broadcast Scheduler
 
@@ -148,14 +148,14 @@ CREATE TABLE IF NOT EXISTS piket (
 Bot-erpeel/
 ├── src/
 │   ├── index.js          # Entrypoint bot & event listeners Baileys
-│   ├── config.js         # Konfigurasi environment variables & path
+│   ├── config.js         # Konfigurasi environment variables & path (Default PREFIX=.)
 │   ├── router.js         # Message router & command dispatcher
 │   ├── commands/
-│   │   ├── jadwal.js     # Handler !jadwal
-│   │   ├── piket.js      # Handler !piket
-│   │   ├── tanggalmerah.js # Handler !tanggalmerah / !libur (API Hari Libur)
-│   │   ├── utility.js    # Handler !id & !groupid
-│   │   └── help.js       # Handler !help & !menu
+│   │   ├── jadwal.js     # Handler .jadwal
+│   │   ├── piket.js      # Handler .piket
+│   │   ├── tanggalmerah.js # Handler .tanggalmerah / .libur (API Hari Libur)
+│   │   ├── utility.js    # Handler .id & .groupid
+│   │   └── help.js       # Handler .help & .menu
 │   ├── db/
 │   │   ├── init.js       # Inisialisasi SQLite database schema
 │   │   ├── queries.js    # Data access layer & helper queries

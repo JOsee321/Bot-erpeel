@@ -73,7 +73,7 @@ console.log('[5/5] Menyimulasikan Eksekusi Command Handlers & Broadcast...');
 function createMockCtx(cmd, args = [], isGroup = true) {
   let repliedText = '';
   return {
-    prefix: '!',
+    prefix: '.',
     commandName: cmd,
     args,
     senderNumber: '6281234567890',
@@ -87,29 +87,29 @@ function createMockCtx(cmd, args = [], isGroup = true) {
   };
 }
 
-// (a) Test Command !jadwal
+// (a) Test Command .jadwal
 queries.setJadwal('rabu', 1, '07:30 - 09:30 : Bahasa Indonesia (Bu Anissa)');
 const viewJadwalCtx = createMockCtx('jadwal', ['rabu']);
 await handleGetJadwal(viewJadwalCtx);
 assert.match(viewJadwalCtx.getRepliedText(), /\*JADWAL PELAJARAN - RABU\*/);
 assert.match(viewJadwalCtx.getRepliedText(), /Bahasa Indonesia/);
 
-// (b) Test Command !piket
+// (b) Test Command .piket
 queries.setPiket('rabu', 'Meilani, Fahry, Wildan, Akmal, Basyir, Joydi');
 const viewPiketCtx = createMockCtx('piket', ['rabu']);
 await handleGetPiket(viewPiketCtx);
 assert.match(viewPiketCtx.getRepliedText(), /\*PETUGAS PIKET - RABU\*/);
 assert.match(viewPiketCtx.getRepliedText(), /Meilani/);
 
-// (c) Test Command !help / !menu
+// (c) Test Command .help / .menu
 const helpCtx = createMockCtx('help');
 await handleHelp(helpCtx);
 assert.match(helpCtx.getRepliedText(), /\*BOT RPL 2\*/);
 assert.match(helpCtx.getRepliedText(), /\*Daftar Perintah:\*/);
-assert.match(helpCtx.getRepliedText(), /!jadwal/);
+assert.match(helpCtx.getRepliedText(), /\.jadwal/);
 assert.match(helpCtx.getRepliedText(), /Bot XI RPL 2/);
 
-// (d) Test Utility Command !id
+// (d) Test Utility Command .id
 const idCtx = createMockCtx('id', [], true);
 await handleGetId(idCtx);
 assert.match(idCtx.getRepliedText(), /120363421062818190@g\.us/);
