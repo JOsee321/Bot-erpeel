@@ -2,20 +2,36 @@ import config from './config.js';
 import logger from './utils/logger.js';
 
 /**
- * Ekstraksi teks isi pesan dari berbagai jenis payload Baileys
+ * Ekstraksi teks isi pesan dari berbagai jenis payload Baileys (termasuk ephemeral & media caption)
  * @param {import('@whiskeysockets/baileys').proto.IMessage} message
  * @returns {string}
  */
 export function extractMessageText(message) {
   if (!message) return '';
+
+  // Unwrap wrapper ephemeral, viewOnce, atau document caption jika ada
+  let msg = message;
+  while (
+    msg.ephemeralMessage?.message ||
+    msg.viewOnceMessage?.message ||
+    msg.viewOnceMessageV2?.message ||
+    msg.documentWithCaptionMessage?.message
+  ) {
+    msg =
+      msg.ephemeralMessage?.message ||
+      msg.viewOnceMessage?.message ||
+      msg.viewOnceMessageV2?.message ||
+      msg.documentWithCaptionMessage?.message;
+  }
+
   return (
-    message.conversation ||
-    message.extendedTextMessage?.text ||
-    message.imageMessage?.caption ||
-    message.videoMessage?.caption ||
-    message.buttonsResponseMessage?.selectedButtonId ||
-    message.listResponseMessage?.singleSelectReply?.selectedRowId ||
-    message.templateButtonReplyMessage?.selectedId ||
+    msg.conversation ||
+    msg.extendedTextMessage?.text ||
+    msg.imageMessage?.caption ||
+    msg.videoMessage?.caption ||
+    msg.buttonsResponseMessage?.selectedButtonId ||
+    msg.listResponseMessage?.singleSelectReply?.selectedRowId ||
+    msg.templateButtonReplyMessage?.selectedId ||
     ''
   );
 }
@@ -38,19 +54,22 @@ export function normalizePhoneNumber(jid) {
  */
 export async function handleIncomingMessage(sock, m, commandRegistry = new Map()) {
   try {
-    // Abaikan pesan jika tidak ada isi atau berasal dari bot sendiri
-    if (!m.message || m.key.fromMe) return;
+    // Abaikan jika tidak ada struktur message
+    if (!m || !m.message) return;
 
     const remoteJid = m.key.remoteJid;
     // Abaikan pesan broadcast status
-    if (remoteJid === 'status@broadcast') return;
-
-    const isGroup = remoteJid.endsWith('@g.us');
-    const senderJid = isGroup ? (m.key.participant || remoteJid) : remoteJid;
-    const senderNumber = normalizePhoneNumber(senderJid);
+    if (!remoteJid || remoteJid === 'status@broadcast') return;
 
     const text = extractMessageText(m.message).trim();
+    // Hanya proses pesan yang diawali prefix (contoh: '!')
     if (!text || !text.startsWith(config.prefix)) return;
+
+    const isGroup = remoteJid.endsWith('@g.us');
+    const senderJid = isGroup
+      ? (m.key.participant || (m.key.fromMe ? sock.user?.id : remoteJid))
+      : (m.key.fromMe ? sock.user?.id : remoteJid);
+    const senderNumber = normalizePhoneNumber(senderJid);
 
     // Parsing prefix, command, dan argument
     const bodyWithoutPrefix = text.slice(config.prefix.length).trim();
@@ -82,13 +101,12 @@ export async function handleIncomingMessage(sock, m, commandRegistry = new Map()
       prefix: config.prefix,
     };
 
-    // Log terminal yang ringkas dan manusiawi
-    const chatType = isGroup ? 'Group' : 'Private';
-    logger.cmd(`${config.prefix}${commandName}`, senderNumber || 'Unknown', chatType);
-
     // Eksekusi command handler jika terdaftar
     const handler = commandRegistry.get(commandName);
     if (handler) {
+      const chatType = isGroup ? 'Group' : 'Private';
+      logger.cmd(`${config.prefix}${commandName}`, senderNumber || 'Unknown', chatType);
+
       try {
         await handler(ctx);
       } catch (cmdError) {
