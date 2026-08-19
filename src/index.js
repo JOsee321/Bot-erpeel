@@ -12,6 +12,9 @@ import path from 'path';
 import config from './config.js';
 import { initDB } from './db/init.js';
 import { handleIncomingMessage } from './router.js';
+import { handleGetJadwal, handleSetJadwal, handleHapusJadwal } from './commands/jadwal.js';
+import { handleGetPiket, handleSetPiket, handleHapusPiket } from './commands/piket.js';
+import { handleHelp } from './commands/help.js';
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -31,6 +34,15 @@ export function registerCommand(names, handler) {
     commandRegistry.set(name.toLowerCase().trim(), handler);
   }
 }
+
+// Registrasi seluruh command bawaan bot
+registerCommand(['jadwal'], handleGetJadwal);
+registerCommand(['setjadwal'], handleSetJadwal);
+registerCommand(['hapusjadwal'], handleHapusJadwal);
+registerCommand(['piket'], handleGetPiket);
+registerCommand(['setpiket'], handleSetPiket);
+registerCommand(['hapuspiket'], handleHapusPiket);
+registerCommand(['help', 'menu', 'panduan'], handleHelp);
 
 /**
  * Inisialisasi dan koneksi Baileys WhatsApp Engine
