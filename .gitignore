@@ -1,0 +1,35 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# WhatsApp Session / Baileys Auth State
+auth_info/
+auth_info_baileys/
+baileys_auth_info/
+*.json-auth
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# SQLite Database Files
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
